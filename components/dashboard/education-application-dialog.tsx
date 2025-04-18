@@ -25,6 +25,10 @@ const formSchema = z.object({
   institution_name: z.string().min(1, "Institution name is required"),
   degree_name: z.string().min(1, "Degree name is required"),
   program_link: z.string().url("Must be a valid URL").or(z.string().length(0)).optional(),
+  location: z.string().optional(),
+  tuition_fees: z.string().optional(),
+  duration: z.string().optional(),
+  application_deadline: z.date().optional(),
   status: z.enum(["applied", "interview", "offer", "rejected", "accepted", "withdrawn"]),
   notes: z.string().optional(),
 })
@@ -50,6 +54,10 @@ export function EducationApplicationDialog({
       institution_name: "",
       degree_name: "",
       program_link: "",
+      location: "",
+      tuition_fees: "",
+      duration: "",
+      application_deadline: undefined,
       status: "applied" as ApplicationStatus,
       notes: "",
     },
@@ -62,6 +70,10 @@ export function EducationApplicationDialog({
         degree_name: application.degree_name,
         program_link: application.program_link || "",
         status: application.status,
+        location: application.location || "",
+        tuition_fees: application.tuition_fees || "",
+        duration: application.duration || "",
+        application_deadline: application.application_deadline ? new Date(application.application_deadline) : undefined,
         notes: application.notes || "",
       })
     } else {
@@ -69,6 +81,10 @@ export function EducationApplicationDialog({
         institution_name: "",
         degree_name: "",
         program_link: "",
+        location: "",
+        tuition_fees: "",
+        duration: "",
+        application_deadline: undefined,
         status: "applied",
         notes: "",
       })
@@ -127,6 +143,66 @@ export function EducationApplicationDialog({
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name="location"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Location (Optional)</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter location" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="tuition_fees"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Tuition Fees (Optional)</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter tuition fees" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="duration"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Duration (Optional)</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter duration" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="application_deadline"
+              render={({ field }) => (
+                <FormItem>
+                    <FormLabel>Application Deadline (Optional)</FormLabel>
+                    <FormControl>
+                        <Input
+                            type="date"
+                            {...field}
+                            value={field.value ? field.value.toISOString().split('T')[0] : ''}
+                            onChange={(e) => {
+                                const date = e.target.value ? new Date(e.target.value) : undefined;
+                                field.onChange(date);
+                            }}
+                        />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+            )}
+              />
             <FormField
               control={form.control}
               name="status"

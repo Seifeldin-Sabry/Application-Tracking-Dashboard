@@ -172,6 +172,23 @@ export function EducationApplications({ initialApplications }: EducationApplicat
             },
         },
         {
+            accessorKey: "details",
+            header: "Details",
+            cell: ({ row }) => {
+                const application = row.original
+                return (
+                    <div className="flex flex-col">
+                        <span className="text-sm text-muted-foreground">Location: {application.location}</span>
+                        <span className="text-sm text-muted-foreground">Tuition: {application.tuition_fees}</span>
+                        <span className="text-sm text-muted-foreground">Duration: {application.duration}</span>
+                        <span className="text-sm text-muted-foreground">
+                            Deadline: {application.application_deadline ? application.application_deadline : "N/A"}
+                        </span>
+                    </div>
+                )
+            },
+        },
+        {
             id: "actions",
             cell: ({ row }) => {
                 const application = row.original
