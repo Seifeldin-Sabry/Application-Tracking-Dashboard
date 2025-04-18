@@ -20,7 +20,7 @@ export type Database = {
           location: string | null
           notes: string | null
           program_link: string | null
-          status: Database["public"]["Enums"]["application_status"]
+          status: Database["public"]["Enums"]["education_app_status"] | null
           tuition_fees: string | null
           updated_at: string | null
           user_id: string
@@ -35,7 +35,7 @@ export type Database = {
           location?: string | null
           notes?: string | null
           program_link?: string | null
-          status?: Database["public"]["Enums"]["application_status"]
+          status?: Database["public"]["Enums"]["education_app_status"] | null
           tuition_fees?: string | null
           updated_at?: string | null
           user_id: string
@@ -50,7 +50,7 @@ export type Database = {
           location?: string | null
           notes?: string | null
           program_link?: string | null
-          status?: Database["public"]["Enums"]["application_status"]
+          status?: Database["public"]["Enums"]["education_app_status"] | null
           tuition_fees?: string | null
           updated_at?: string | null
           user_id?: string
@@ -65,7 +65,7 @@ export type Database = {
           job_posting_link: string | null
           job_title: string
           notes: string | null
-          status: Database["public"]["Enums"]["application_status"]
+          status: Database["public"]["Enums"]["employment_app_status"] | null
           updated_at: string | null
           user_id: string
         }
@@ -76,7 +76,7 @@ export type Database = {
           job_posting_link?: string | null
           job_title: string
           notes?: string | null
-          status?: Database["public"]["Enums"]["application_status"]
+          status?: Database["public"]["Enums"]["employment_app_status"] | null
           updated_at?: string | null
           user_id: string
         }
@@ -87,7 +87,7 @@ export type Database = {
           job_posting_link?: string | null
           job_title?: string
           notes?: string | null
-          status?: Database["public"]["Enums"]["application_status"]
+          status?: Database["public"]["Enums"]["employment_app_status"] | null
           updated_at?: string | null
           user_id?: string
         }
@@ -101,13 +101,19 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      application_status:
+      education_app_status:
+          | "contacted"
           | "applied"
-          | "interview"
+          | "accepted"
+          | "enrolled"
+          | "rejected"
+          | "dismissed"
+      employment_app_status:
+          | "applied"
+          | "interviewing"
           | "offer"
           | "rejected"
-          | "accepted"
-          | "withdrawn"
+          | "noreply"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -223,19 +229,27 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      application_status: [
+      education_app_status: [
+        "contacted",
         "applied",
-        "interview",
+        "accepted",
+        "enrolled",
+        "rejected",
+        "dismissed",
+      ],
+      employment_app_status: [
+        "applied",
+        "interviewing",
         "offer",
         "rejected",
-        "accepted",
-        "withdrawn",
+        "noreply",
       ],
     },
   },
 } as const
 
-export const ApplicationStatus = Constants.public.Enums.application_status
 
-export type Tables<T extends keyof Database["public"]["Tables"]> = Database["public"]["Tables"][T]["Row"]
-export type Enums<T extends keyof Database["public"]["Enums"]> = Database["public"]["Enums"][T]
+export type EmploymentStatus = Database["public"]["Enums"]["employment_app_status"]
+export type EducationStatus = Database["public"]["Enums"]["education_app_status"]
+export const employmentStatus = Constants.public.Enums.employment_app_status
+export const educationStatus = Constants.public.Enums.education_app_status

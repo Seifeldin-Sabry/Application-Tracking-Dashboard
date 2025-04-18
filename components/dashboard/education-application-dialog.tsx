@@ -4,7 +4,7 @@ import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
-import type { Tables, ApplicationStatus } from "@/lib/database.types"
+import type { Tables, EducationStatus } from "@/lib/database.types"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -18,6 +18,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {educationStatus} from "@/lib/database.types";
 
 type EducationApplication = Tables<"education_applications">
 
@@ -29,7 +30,7 @@ const formSchema = z.object({
   tuition_fees: z.string().optional(),
   duration: z.string().optional(),
   application_deadline: z.date().optional(),
-  status: z.enum(["applied", "interview", "offer", "rejected", "accepted", "withdrawn"]),
+  status: z.enum(educationStatus),
   notes: z.string().optional(),
 })
 
@@ -58,7 +59,7 @@ export function EducationApplicationDialog({
       tuition_fees: "",
       duration: "",
       application_deadline: undefined,
-      status: "applied" as ApplicationStatus,
+      status: "applied" as EducationStatus,
       notes: "",
     },
   })
@@ -216,12 +217,11 @@ export function EducationApplicationDialog({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="applied">Applied</SelectItem>
-                      <SelectItem value="interview">Interview</SelectItem>
-                      <SelectItem value="offer">Offer</SelectItem>
-                      <SelectItem value="accepted">Accepted</SelectItem>
-                      <SelectItem value="rejected">Rejected</SelectItem>
-                      <SelectItem value="withdrawn">Withdrawn</SelectItem>
+                        {educationStatus.map((status) => (
+                          <SelectItem key={status} value={status}>
+                            {status.charAt(0).toUpperCase() + status.slice(1)}
+                            </SelectItem>
+                        ))}
                     </SelectContent>
                   </Select>
                   <FormMessage />

@@ -4,7 +4,7 @@ import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
-import type { Tables, ApplicationStatus } from "@/lib/database.types"
+import type { Tables, EmploymentStatus } from "@/lib/database.types"
 import { Button } from "@/components/ui/button"
 import {
     Dialog,
@@ -18,6 +18,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {employmentStatus} from "@/lib/database.types";
 
 type EmploymentApplication = Tables<"employment_applications">
 
@@ -25,7 +26,7 @@ const formSchema = z.object({
     company_name: z.string().min(1, "Company name is required"),
     job_title: z.string().min(1, "Job title is required"),
     job_posting_link: z.string().url("Must be a valid URL").or(z.string().length(0)).optional(),
-    status: z.enum(["applied", "interview", "offer", "rejected", "accepted", "withdrawn"]),
+    status: z.enum(employmentStatus),
     notes: z.string().optional(),
 })
 
@@ -50,7 +51,7 @@ export function EmploymentApplicationDialog({
             company_name: "",
             job_title: "",
             job_posting_link: "",
-            status: "applied" as ApplicationStatus,
+            status: "applied" as EmploymentStatus,
             notes: "",
         },
     })
@@ -140,12 +141,12 @@ export function EmploymentApplicationDialog({
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
-                                            <SelectItem value="applied">Applied</SelectItem>
-                                            <SelectItem value="interview">Interview</SelectItem>
-                                            <SelectItem value="offer">Offer</SelectItem>
-                                            <SelectItem value="accepted">Accepted</SelectItem>
-                                            <SelectItem value="rejected">Rejected</SelectItem>
-                                            <SelectItem value="withdrawn">Withdrawn</SelectItem>
+                                            {employmentStatus.map((status => (
+                                                <SelectItem key={status} value={status}>
+                                                    {status.charAt(0).toUpperCase() + status.slice(1)}
+                                                </SelectItem>
+                                            )))}
+                                            )}
                                         </SelectContent>
                                     </Select>
                                     <FormMessage />

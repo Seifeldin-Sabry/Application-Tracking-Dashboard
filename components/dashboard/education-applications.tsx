@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
-import type { Tables, ApplicationStatus } from "@/lib/database.types"
+import type {Tables, EducationStatus} from "@/lib/database.types"
 import type { ColumnDef } from "@tanstack/react-table"
 import { DataTable } from "@/components/ui/data-table"
 import { Button } from "@/components/ui/button"
@@ -44,7 +44,7 @@ export function EducationApplications({ initialApplications }: EducationApplicat
     const [isDialogOpen, setIsDialogOpen] = useState(false)
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
     const [currentApplication, setCurrentApplication] = useState<EducationApplication | null>(null)
-    const [selectedStatuses, setSelectedStatuses] = useState<ApplicationStatus[]>([])
+    const [selectedStatuses, setSelectedStatuses] = useState<EducationStatus[]>([])
     const [institutionFilter, setInstitutionFilter] = useState("")
     const router = useRouter()
     const supabase = createClient()
@@ -167,7 +167,7 @@ export function EducationApplications({ initialApplications }: EducationApplicat
             accessorKey: "status",
             header: "Status",
             cell: ({ row }) => {
-                const status = row.getValue("status") as ApplicationStatus
+                const status = row.getValue("status") as EducationStatus
                 return <StatusBadge status={status} />
             },
         },
