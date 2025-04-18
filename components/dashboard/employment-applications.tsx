@@ -9,6 +9,7 @@ import { DataTable } from "@/components/ui/data-table"
 import { Button } from "@/components/ui/button"
 import { StatusBadge } from "@/components/dashboard/status-badge"
 import { EmploymentApplicationDialog } from "@/components/dashboard/employment-application-dialog"
+import { StatusFilter } from "@/components/dashboard/status-filter"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -30,7 +31,6 @@ import {
 import { ExternalLink, MoreHorizontal, Plus, Filter } from "lucide-react"
 import { toast } from "sonner"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 
 type EmploymentApplication = Tables<"employment_applications">
@@ -44,7 +44,7 @@ export function EmploymentApplications({ initialApplications }: EmploymentApplic
     const [isDialogOpen, setIsDialogOpen] = useState(false)
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
     const [currentApplication, setCurrentApplication] = useState<EmploymentApplication | null>(null)
-    const [statusFilter, setStatusFilter] = useState<ApplicationStatus | "all">("all")
+    const [selectedStatuses, setSelectedStatuses] = useState<ApplicationStatus[]>([])
     const [companyFilter, setCompanyFilter] = useState("")
     const router = useRouter()
     const supabase = createClient()
@@ -127,7 +127,7 @@ export function EmploymentApplications({ initialApplications }: EmploymentApplic
     }
 
     const filteredApplications = applications.filter((app) => {
-        const matchesStatus = statusFilter === "all" || app.status === statusFilter
+        const matchesStatus = selectedStatuses.length === 0 || selectedStatuses.includes(app.status)
         const matchesCompany = companyFilter === "" || app.company_name.toLowerCase().includes(companyFilter.toLowerCase())
         return matchesStatus && matchesCompany
     })
@@ -233,28 +233,10 @@ export function EmploymentApplications({ initialApplications }: EmploymentApplic
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="flex items-center gap-2 ">
                         <div className="space-y-2">
-                            <label htmlFor="status-filter" className="text-sm font-medium">
-                                Status
-                            </label>
-                            <Select
-                                value={statusFilter}
-                                onValueChange={(value) => setStatusFilter(value as ApplicationStatus | "all")}
-                            >
-                                <SelectTrigger id="status-filter">
-                                    <SelectValue placeholder="Filter by status" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="all">All Statuses</SelectItem>
-                                    <SelectItem value="applied">Applied</SelectItem>
-                                    <SelectItem value="interview">Interview</SelectItem>
-                                    <SelectItem value="offer">Offer</SelectItem>
-                                    <SelectItem value="accepted">Accepted</SelectItem>
-                                    <SelectItem value="rejected">Rejected</SelectItem>
-                                    <SelectItem value="withdrawn">Withdrawn</SelectItem>
-                                </SelectContent>
-                            </Select>
+                            <label className="text-sm font-medium">Status</label>
+                            <StatusFilter selectedStatuses={selectedStatuses} onChange={setSelectedStatuses} />
                         </div>
                         <div className="space-y-2">
                             <label htmlFor="company-filter" className="text-sm font-medium">
@@ -266,14 +248,38 @@ export function EmploymentApplications({ initialApplications }: EmploymentApplic
                                 value={companyFilter}
                                 onChange={(e) => setCompanyFilter(e.target.value)}
                             />
+                            {companyFilter && (
+                                <Button variant="outline" size="sm" onClick={() => setCompanyFilter("")} className="mt-2">
+                                    Clear
+                                </Button>
+                            )}
                         </div>
                     </div>
+                    {(selectedStatuses.length > 0 || companyFilter) && (
+                        <div className="mt-4 flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">
+                Showing {filteredApplications.length} of {applications.length} applications
+              </span>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                    setSelectedStatuses([])
+                                    setCompanyFilter("")
+                                }}
+                            >
+                                Clear All Filters
+                            </Button>
+                        </div>
+                    )}
                 </CardContent>
             </Card>
 
             <DataTable
                 columns={columns}
                 data={filteredApplications}
+                searchColumn="company_name"
+                searchPlaceholder="Search companies..."
             />
 
             <EmploymentApplicationDialog

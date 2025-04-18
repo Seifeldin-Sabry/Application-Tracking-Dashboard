@@ -9,6 +9,7 @@ import { DataTable } from "@/components/ui/data-table"
 import { Button } from "@/components/ui/button"
 import { StatusBadge } from "@/components/dashboard/status-badge"
 import { EducationApplicationDialog } from "@/components/dashboard/education-application-dialog"
+import { StatusFilter } from "@/components/dashboard/status-filter"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -30,7 +31,6 @@ import {
 import { ExternalLink, MoreHorizontal, Plus, Filter } from "lucide-react"
 import { toast } from "sonner"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 
 type EducationApplication = Tables<"education_applications">
@@ -44,7 +44,7 @@ export function EducationApplications({ initialApplications }: EducationApplicat
     const [isDialogOpen, setIsDialogOpen] = useState(false)
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
     const [currentApplication, setCurrentApplication] = useState<EducationApplication | null>(null)
-    const [statusFilter, setStatusFilter] = useState<ApplicationStatus | "all">("all")
+    const [selectedStatuses, setSelectedStatuses] = useState<ApplicationStatus[]>([])
     const [institutionFilter, setInstitutionFilter] = useState("")
     const router = useRouter()
     const supabase = createClient()
@@ -127,7 +127,7 @@ export function EducationApplications({ initialApplications }: EducationApplicat
     }
 
     const filteredApplications = applications.filter((app) => {
-        const matchesStatus = statusFilter === "all" || app.status === statusFilter
+        const matchesStatus = selectedStatuses.length === 0 || selectedStatuses.includes(app.status)
         const matchesInstitution =
             institutionFilter === "" || app.institution_name.toLowerCase().includes(institutionFilter.toLowerCase())
         return matchesStatus && matchesInstitution
@@ -234,28 +234,10 @@ export function EducationApplications({ initialApplications }: EducationApplicat
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="flex items-center gap-2 ">
                         <div className="space-y-2">
-                            <label htmlFor="status-filter" className="text-sm font-medium">
-                                Status
-                            </label>
-                            <Select
-                                value={statusFilter}
-                                onValueChange={(value) => setStatusFilter(value as ApplicationStatus | "all")}
-                            >
-                                <SelectTrigger id="status-filter">
-                                    <SelectValue placeholder="Filter by status" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="all">All Statuses</SelectItem>
-                                    <SelectItem value="applied">Applied</SelectItem>
-                                    <SelectItem value="interview">Interview</SelectItem>
-                                    <SelectItem value="offer">Offer</SelectItem>
-                                    <SelectItem value="accepted">Accepted</SelectItem>
-                                    <SelectItem value="rejected">Rejected</SelectItem>
-                                    <SelectItem value="withdrawn">Withdrawn</SelectItem>
-                                </SelectContent>
-                            </Select>
+                            <label className="text-sm font-medium">Status</label>
+                            <StatusFilter selectedStatuses={selectedStatuses} onChange={setSelectedStatuses} />
                         </div>
                         <div className="space-y-2">
                             <label htmlFor="institution-filter" className="text-sm font-medium">
@@ -267,14 +249,40 @@ export function EducationApplications({ initialApplications }: EducationApplicat
                                 value={institutionFilter}
                                 onChange={(e) => setInstitutionFilter(e.target.value)}
                             />
+                            {institutionFilter && (
+                                <Button variant="outline" size="sm" onClick={() => setInstitutionFilter("")}
+                                        className="mt-2"
+                                >
+                                    Clear
+                                </Button>
+                            )}
                         </div>
                     </div>
+                    {(selectedStatuses.length > 0 || institutionFilter) && (
+                        <div className="mt-4 flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">
+                Showing {filteredApplications.length} of {applications.length} applications
+              </span>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                    setSelectedStatuses([])
+                                    setInstitutionFilter("")
+                                }}
+                            >
+                                Clear All Filters
+                            </Button>
+                        </div>
+                    )}
                 </CardContent>
             </Card>
 
             <DataTable
                 columns={columns}
                 data={filteredApplications}
+                searchColumn="institution_name"
+                searchPlaceholder="Search institutions..."
             />
 
             <EducationApplicationDialog
