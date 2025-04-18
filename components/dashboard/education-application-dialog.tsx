@@ -67,6 +67,24 @@ export function EducationApplicationDialog({
         },
     })
 
+    // Reset form when opening for new application
+    useEffect(() => {
+        if (open && !application) {
+            form.reset({
+                institution_name: "",
+                degree_name: "",
+                program_link: "",
+                location: "",
+                tuition_fees: "",
+                duration: "",
+                application_deadline: undefined,
+                status: "applied",
+                notes: "",
+            })
+        }
+    }, [open, application, form])
+
+    // Populate form when editing existing application
     useEffect(() => {
         if (application) {
             form.reset({
@@ -80,7 +98,12 @@ export function EducationApplicationDialog({
                 application_deadline: application.application_deadline ? new Date(application.application_deadline) : undefined,
                 notes: application.notes || "",
             })
-        } else {
+        }
+    }, [application, form])
+
+    const handleSubmit = (values: FormValues) => {
+        onSubmit(values)
+        if (!application) {
             form.reset({
                 institution_name: "",
                 degree_name: "",
@@ -93,7 +116,7 @@ export function EducationApplicationDialog({
                 notes: "",
             })
         }
-    }, [application, form])
+    }
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -109,7 +132,7 @@ export function EducationApplicationDialog({
 
                 <div className="flex-1 overflow-y-auto">
                     <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
                             <FormField
                                 control={form.control}
                                 name="institution_name"
@@ -222,49 +245,4 @@ export function EducationApplicationDialog({
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
-                                                {educationStatus.map((status) => (
-                                                    <SelectItem key={status} value={status}>
-                                                        {status.charAt(0).toUpperCase() + status.slice(1)}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="notes"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Notes (Optional)</FormLabel>
-                                        <FormControl>
-                                            <Textarea
-                                                placeholder="Add any additional notes about this application"
-                                                className="resize-none"
-                                                {...field}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        </form>
-                    </Form>
-                </div>
-
-                <DialogFooter className={`${isMobile ? 'flex-col gap-2' : ''} mt-4`}>
-                    {isMobile && (
-                        <DialogClose asChild>
-                            <Button variant="outline" className="w-full">Cancel</Button>
-                        </DialogClose>
-                    )}
-                    <Button type="submit" className={isMobile ? "w-full" : ""} onClick={form.handleSubmit(onSubmit)}>
-                        {application ? "Update Application" : "Add Application"}
-                    </Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
-    )
-}
+                                                {educationStatus.map((status)

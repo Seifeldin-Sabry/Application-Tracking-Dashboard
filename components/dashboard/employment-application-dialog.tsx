@@ -59,6 +59,20 @@ export function EmploymentApplicationDialog({
         },
     })
 
+    // Reset form when opening for new application
+    useEffect(() => {
+        if (open && !application) {
+            form.reset({
+                company_name: "",
+                job_title: "",
+                job_posting_link: "",
+                status: "applied",
+                notes: "",
+            })
+        }
+    }, [open, application, form])
+
+    // Populate form when editing existing application
     useEffect(() => {
         if (application) {
             form.reset({
@@ -68,7 +82,12 @@ export function EmploymentApplicationDialog({
                 status: application.status,
                 notes: application.notes || "",
             })
-        } else {
+        }
+    }, [application, form])
+
+    const handleSubmit = (values: FormValues) => {
+        onSubmit(values)
+        if (!application) {
             form.reset({
                 company_name: "",
                 job_title: "",
@@ -77,7 +96,7 @@ export function EmploymentApplicationDialog({
                 notes: "",
             })
         }
-    }, [application, form])
+    }
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -93,7 +112,7 @@ export function EmploymentApplicationDialog({
 
                 <div className="flex-1 overflow-y-auto">
                     <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
                             <FormField
                                 control={form.control}
                                 name="company_name"
@@ -184,7 +203,7 @@ export function EmploymentApplicationDialog({
                             <Button variant="outline" className="w-full">Cancel</Button>
                         </DialogClose>
                     )}
-                    <Button type="submit" className={isMobile ? "w-full" : ""} onClick={form.handleSubmit(onSubmit)}>
+                    <Button type="submit" className={isMobile ? "w-full" : ""} onClick={form.handleSubmit(handleSubmit)}>
                         {application ? "Update Application" : "Add Application"}
                     </Button>
                 </DialogFooter>
