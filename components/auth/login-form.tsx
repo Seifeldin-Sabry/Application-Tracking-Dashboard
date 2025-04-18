@@ -48,7 +48,7 @@ export function LoginForm() {
       email,
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
+        emailRedirectTo: `${NEXT_PUBLIC_BASE_URL}/auth/callback`,
       },
     })
 
