@@ -245,4 +245,49 @@ export function EducationApplicationDialog({
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
-                                                {educationStatus.map((status)
+                                                {educationStatus.map((status) => (
+                                                    <SelectItem key={status} value={status}>
+                                                        {status.charAt(0).toUpperCase() + status.slice(1)}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="notes"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Notes (Optional)</FormLabel>
+                                        <FormControl>
+                                            <Textarea
+                                                placeholder="Add any additional notes about this application"
+                                                className="resize-none"
+                                                {...field}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </form>
+                    </Form>
+                </div>
+
+                <DialogFooter className={`${isMobile ? 'flex-col gap-2' : ''} mt-4`}>
+                    {isMobile && (
+                        <DialogClose asChild>
+                            <Button variant="outline" className="w-full">Cancel</Button>
+                        </DialogClose>
+                    )}
+                    <Button type="submit" className={isMobile ? "w-full" : ""} onClick={form.handleSubmit(handleSubmit)}>
+                        {application ? "Update Application" : "Add Application"}
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    )
+}
