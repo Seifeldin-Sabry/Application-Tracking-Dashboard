@@ -13,12 +13,15 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
+    DialogClose,
 } from "@/components/ui/dialog"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import {employmentStatus} from "@/lib/database.types";
+import { employmentStatus } from "@/lib/database.types"
+import { useIsMobile } from "@/hooks/use-mobile"
+import { X } from "lucide-react"
 
 type EmploymentApplication = Tables<"employment_applications">
 
@@ -45,6 +48,7 @@ export function EmploymentApplicationDialog({
                                                 application,
                                                 onSubmit,
                                             }: EmploymentApplicationDialogProps) {
+    const isMobile = useIsMobile()
     const form = useForm<FormValues>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -78,14 +82,20 @@ export function EmploymentApplicationDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[500px]">
-                <DialogHeader>
-                    <DialogTitle>{application ? "Edit Application" : "Add New Application"}</DialogTitle>
-                    <DialogDescription>
-                        {application
-                            ? "Update the details of your job application."
-                            : "Enter the details of your new job application."}
-                    </DialogDescription>
+            <DialogContent className={`${isMobile ? 'w-full max-w-full rounded-none h-full' : 'sm:max-w-[500px]'}`}>
+                <DialogHeader className="flex flex-row items-center justify-between">
+                    <div>
+                        <DialogTitle>{application ? "Edit Application" : "Add New Application"}</DialogTitle>
+                        <DialogDescription>
+                            {application
+                                ? "Update the details of your job application."
+                                : "Enter the details of your new job application."}
+                        </DialogDescription>
+                    </div>
+                    <DialogClose className="p-2 rounded-full hover:bg-gray-100">
+                        <X className="h-4 w-4" />
+                        <span className="sr-only">Close</span>
+                    </DialogClose>
                 </DialogHeader>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -141,12 +151,11 @@ export function EmploymentApplicationDialog({
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
-                                            {employmentStatus.map((status => (
+                                            {employmentStatus.map((status) => (
                                                 <SelectItem key={status} value={status}>
                                                     {status.charAt(0).toUpperCase() + status.slice(1)}
                                                 </SelectItem>
-                                            )))}
-                                            )}
+                                            ))}
                                         </SelectContent>
                                     </Select>
                                     <FormMessage />
@@ -170,8 +179,15 @@ export function EmploymentApplicationDialog({
                                 </FormItem>
                             )}
                         />
-                        <DialogFooter>
-                            <Button type="submit">{application ? "Update Application" : "Add Application"}</Button>
+                        <DialogFooter className={`${isMobile ? 'flex-col gap-2' : ''}`}>
+                            {isMobile && (
+                                <DialogClose asChild>
+                                    <Button variant="outline" className="w-full">Cancel</Button>
+                                </DialogClose>
+                            )}
+                            <Button type="submit" className={isMobile ? "w-full" : ""}>
+                                {application ? "Update Application" : "Add Application"}
+                            </Button>
                         </DialogFooter>
                     </form>
                 </Form>
