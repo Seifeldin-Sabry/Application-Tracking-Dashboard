@@ -13,12 +13,14 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
+    DialogClose,
 } from "@/components/ui/dialog"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import {employmentStatus} from "@/lib/database.types";
+import { employmentStatus } from "@/lib/database.types"
+import { useIsMobile } from "@/hooks/use-mobile"
 
 type EmploymentApplication = Tables<"employment_applications">
 
@@ -45,6 +47,7 @@ export function EmploymentApplicationDialog({
                                                 application,
                                                 onSubmit,
                                             }: EmploymentApplicationDialogProps) {
+    const isMobile = useIsMobile()
     const form = useForm<FormValues>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -78,7 +81,7 @@ export function EmploymentApplicationDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[500px]">
+            <DialogContent className={`${isMobile ? 'w-full max-w-full rounded-none h-[95vh]' : 'sm:max-w-[500px]'} flex flex-col`}>
                 <DialogHeader>
                     <DialogTitle>{application ? "Edit Application" : "Add New Application"}</DialogTitle>
                     <DialogDescription>
@@ -87,94 +90,104 @@ export function EmploymentApplicationDialog({
                             : "Enter the details of your new job application."}
                     </DialogDescription>
                 </DialogHeader>
-                <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                        <FormField
-                            control={form.control}
-                            name="company_name"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Company Name</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Enter company name" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="job_title"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Job Title</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Enter job title" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="job_posting_link"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Job Posting Link (Optional)</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="https://..." {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="status"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Application Status</FormLabel>
-                                    <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+
+                <div className="flex-1 overflow-y-auto">
+                    <Form {...form}>
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                            <FormField
+                                control={form.control}
+                                name="company_name"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Company Name</FormLabel>
                                         <FormControl>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Select status" />
-                                            </SelectTrigger>
+                                            <Input placeholder="Enter company name" {...field} />
                                         </FormControl>
-                                        <SelectContent>
-                                            {employmentStatus.map((status => (
-                                                <SelectItem key={status} value={status}>
-                                                    {status.charAt(0).toUpperCase() + status.slice(1)}
-                                                </SelectItem>
-                                            )))}
-                                            )}
-                                        </SelectContent>
-                                    </Select>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="notes"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Notes (Optional)</FormLabel>
-                                    <FormControl>
-                                        <Textarea
-                                            placeholder="Add any additional notes about this application"
-                                            className="resize-none"
-                                            {...field}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <DialogFooter>
-                            <Button type="submit">{application ? "Update Application" : "Add Application"}</Button>
-                        </DialogFooter>
-                    </form>
-                </Form>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="job_title"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Job Title</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder="Enter job title" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="job_posting_link"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Job Posting Link (Optional)</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder="https://..." {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="status"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Application Status</FormLabel>
+                                        <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                                            <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Select status" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                {employmentStatus.map((status) => (
+                                                    <SelectItem key={status} value={status}>
+                                                        {status.charAt(0).toUpperCase() + status.slice(1)}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="notes"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Notes (Optional)</FormLabel>
+                                        <FormControl>
+                                            <Textarea
+                                                placeholder="Add any additional notes about this application"
+                                                className="resize-none"
+                                                {...field}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </form>
+                    </Form>
+                </div>
+
+                <DialogFooter className={`${isMobile ? 'flex-col gap-2' : ''} mt-4`}>
+                    {isMobile && (
+                        <DialogClose asChild>
+                            <Button variant="outline" className="w-full">Cancel</Button>
+                        </DialogClose>
+                    )}
+                    <Button type="submit" className={isMobile ? "w-full" : ""} onClick={form.handleSubmit(onSubmit)}>
+                        {application ? "Update Application" : "Add Application"}
+                    </Button>
+                </DialogFooter>
             </DialogContent>
         </Dialog>
     )
