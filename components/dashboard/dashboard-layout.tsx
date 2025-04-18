@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Briefcase, GraduationCap, LogOut, Menu, User, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
+import {Footer} from "@/components/footer";
 
 interface DashboardLayoutProps {
   children: React.ReactNode
@@ -151,7 +152,12 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             </div>
           </div>
 
-          <main className="flex-1 overflow-auto p-4 md:p-6">{children}</main>
+          <div className="flex flex-col flex-1">
+            <main className="flex-1 overflow-auto p-4 md:p-6">
+              {children}
+            </main>
+            <Footer />
+          </div>
         </div>
       </div>
   )
