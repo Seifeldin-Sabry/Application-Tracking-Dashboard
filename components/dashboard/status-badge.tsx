@@ -14,6 +14,8 @@ export function StatusBadge({ status }: StatusBadgeProps ) {
         return "bg-blue-500 text-blue-800"
       case "accepted":
         return "bg-green-500 text-green-800"
+      case "enrolled":
+        return "bg-green-500 text-green-800"
       case "offer":
         return "bg-green-500 text-green-800"
       case "interviewing":
