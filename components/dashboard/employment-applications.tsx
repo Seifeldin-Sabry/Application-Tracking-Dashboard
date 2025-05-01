@@ -424,20 +424,16 @@ export function EmploymentApplications({ initialApplications }: EmploymentApplic
                         <div className="space-y-4">
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
+                                    <p className="text-sm font-medium text-muted-foreground">Company</p>
+                                    <p>{currentApplication.company_name || "N/A"}</p>
+                                </div>
+                                <div>
                                     <p className="text-sm font-medium text-muted-foreground">Status</p>
                                     <StatusBadge status={currentApplication.status} />
                                 </div>
                                 <div>
-                                    <p className="text-sm font-medium text-muted-foreground">Location</p>
-                                    <p>{currentApplication.location || "N/A"}</p>
-                                </div>
-                                <div>
-                                    <p className="text-sm font-medium text-muted-foreground">Salary Range</p>
-                                    <p>{currentApplication.salary_range || "N/A"}</p>
-                                </div>
-                                <div>
-                                    <p className="text-sm font-medium text-muted-foreground">Application Date</p>
-                                    <p>{currentApplication.application_date || "N/A"}</p>
+                                    <p className="text-sm font-medium text-muted-foreground">Job Title</p>
+                                    <p>{currentApplication.job_title || "N/A"}</p>
                                 </div>
                                 <div className="col-span-2">
                                     <p className="text-sm font-medium text-muted-foreground">Notes</p>
